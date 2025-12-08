@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Finder - Discover Delicious Recipes</title>
     <link rel="icon" href="Logo(Black and white).png" type="image/x-icon">
-    <link rel="stylesheet" href="styel.css">
+    <link href="styel.css" rel="stylesheet">
 </head>
 <body>
     <!-- How It Works Modal -->
@@ -13,8 +13,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()">&times;</button>
             <h2>🍳 How It Works</h2>
-            <p style="color: #6d6d6d; margin-bottom: 10px;">By Sinalo</p>
-            
+             <p style="color: #6d6d6d; margin-bottom: 10px;">By Sinalo</p>
             <div class="step">
                 <div class="step-number">1</div>
                 <div class="step-content">
@@ -59,8 +58,8 @@
     <div class="container">
         <header>
             <h1>🍳 Recipe Finder</h1>
-            <p class="tagline">Find delicious recipes from around the web</p><br>
-            <p style="color: #d4d4d4;">By Sinalo</p>
+            <p>By Sinalo</p>
+            <p class="tagline">Find delicious recipes from around the web</p>
         </header>
 
         <!-- Recipe of the Day -->
@@ -185,7 +184,158 @@
         </div>
     </div>
 
-    <script src="js.js">
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const modal = document.getElementById('howItWorksModal');
+        const dietFilter = document.getElementById('dietFilter');
+        const mealFilter = document.getElementById('mealFilter');
+        const timeFilter = document.getElementById('timeFilter');
+        
+        const dailyRecipes = [
+            "Classic Spaghetti Carbonara",
+            "Honey Garlic Chicken",
+            "Vegetarian Buddha Bowl",
+            "Chocolate Chip Cookies",
+            "Thai Green Curry",
+            "BBQ Pulled Pork Sandwiches",
+            "Greek Salad with Grilled Chicken"
+        ];
+
+        // Show modal on first visit
+        window.addEventListener('load', () => {
+            if (!sessionStorage.getItem('visitedBefore')) {
+                openModal();
+                sessionStorage.setItem('visitedBefore', 'true');
+            }
+            loadDailyRecipe();
+            loadFavorites();
+        });
+
+        function loadDailyRecipe() {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+            const recipe = dailyRecipes[dayOfYear % dailyRecipes.length];
+            document.getElementById('dailyRecipe').textContent = recipe;
+        }
+
+        function searchDailyRecipe() {
+            const recipe = document.getElementById('dailyRecipe').textContent;
+            searchInput.value = recipe;
+            searchRecipes();
+        }
+
+        function openModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchRecipes();
+            }
+        });
+
+        function quickSearch(query) {
+            searchInput.value = query;
+            searchRecipes();
+        }
+
+        function searchRecipes() {
+            let query = searchInput.value.trim();
+            if (!query) {
+                alert('Please enter a search term');
+                return;
+            }
+
+            const diet = dietFilter.value;
+            const meal = mealFilter.value;
+            const time = timeFilter.value;
+
+            if (diet) query += ` ${diet}`;
+            if (meal) query += ` ${meal}`;
+            if (time) query += ` ${time}`;
+
+            const resultsDiv = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsDiv.classList.add('active');
+            resultsContent.innerHTML = '<div class="loading">🔍 Searching for recipes...</div>';
+
+            setTimeout(() => {
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + ' recipe')}`;
+                
+                resultsContent.innerHTML = `
+                    <div style="text-align: center; padding: 30px;">
+                        <h3 style="color: #333; margin-bottom: 20px;">Ready to find "${searchInput.value}" recipes!</h3>
+                        <p style="color: #666; margin-bottom: 25px; font-size: 1.1em;">Click below to search for recipes on the web:</p>
+                        <a href="${searchUrl}" target="_blank" style="display: inline-block; padding: 18px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1em;">
+                            Search for ${searchInput.value} recipes →
+                        </a>
+                        <p style="color: #999; margin-top: 20px; font-size: 0.9em;">Or try the popular recipe sites below!</p>
+                    </div>
+                `;
+            }, 800);
+        }
+
+        function saveFavorite() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('Please enter a search term first');
+                return;
+            }
+
+            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            
+            if (favorites.includes(query)) {
+                alert('Already in favorites!');
+                return;
+            }
+
+            favorites.push(query);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            loadFavorites();
+            alert('Added to favorites! 💖');
+        }
+
+        function loadFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const favoritesList = document.getElementById('favoritesList');
+
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<div class="empty-favorites">No favorites yet. Save your searches above!</div>';
+                return;
+            }
+
+            favoritesList.innerHTML = favorites.map(fav => `
+                <div class="favorite-item">
+                    <span class="favorite-name" onclick="quickSearch('${fav}')" style="cursor: pointer;">${fav}</span>
+                    <button class="remove-btn" onclick="removeFavorite('${fav}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeFavorite(query) {
+            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            favorites = favorites.filter(f => f !== query);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            loadFavorites();
+        }
     </script>
 </body>
 </html>
