@@ -48,7 +48,11 @@ Quick links to trusted recipe websites:
 - No build tools or server required — this app runs as a static page.
 
 ### Installation
+
+Made with ❤️ for home cooks everywhere <br>
+Happy Cooking! 🍳👨‍🍳🍽️
 ```bash
+
 # Clone or download the repository
 git clone https://github.com/yourusername/recipe-finder.git
 cd recipe-finder
