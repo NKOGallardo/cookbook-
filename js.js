@@ -1,0 +1,285 @@
+ // ---------- Data & Storage ----------
+  const STORAGE_KEY = 'recipes_v1';
+  const FAVORITES_KEY = 'favorites_v1';
+  const PREMIUM_KEY = 'premium_v1';
+
+  // Seed data (images are free unsplash / placeholder)
+  const seedRecipes = [
+    {
+      id: 'r1',
+      name: 'Spaghetti Bolognese',
+      ingredients: ['spaghetti','tomato','beef','onion','garlic'],
+      tags: ['pasta','italian','dinner'],
+      image: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=800&q=60',
+      source: { type: 'youtube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      instructions: 'Cook pasta. Prepare sauce. Mix and serve.',
+      premium: false
+    },
+    {
+      id: 'r2',
+      name: 'TikTok Tortilla Pizza',
+      ingredients: ['tortilla','cheese','tomato','oregano'],
+      tags: ['tiktok','quick','snack'],
+      image: 'https://via.placeholder.com/800x450?text=TikTok+Tortilla+Pizza',
+      source: { type: 'tiktok', url: 'https://www.tiktok.com' },
+      instructions: 'Assemble tortilla, cheese, bake briefly.',
+      premium: false
+    },
+    {
+      id: 'r3',
+      name: 'Creamy Chicken Curry (Premium)',
+      ingredients: ['chicken','curry','coconut milk'],
+      tags: ['curry','spicy','dinner'],
+      image: 'https://images.unsplash.com/photo-1604908176995-0f3c33c1af0f?auto=format&fit=crop&w=800&q=60',
+      source: { type: 'youtube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      instructions: 'Brown chicken, add spices and coconut milk. Simmer and serve.',
+      premium: true
+    }
+  ];
+
+  function loadRecipes(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){console.warn(e)}
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(seedRecipes));
+    return seedRecipes.slice();
+  }
+  function saveRecipes(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+  // favorites and premium
+  function loadFavs(){ try{ return JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]') }catch{ return [] } }
+  function saveFavs(f){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(f)); }
+  function isPremium(){ return !!localStorage.getItem(PREMIUM_KEY); }
+  function setPremium(){ localStorage.setItem(PREMIUM_KEY, Date.now()) }
+
+  // ---------- Search (simple fuzzy-ish) ----------
+  function fuzzySearch(list, q){
+    if(!q) return list;
+    q = q.toLowerCase().trim();
+    const parts = q.split(/\s+/);
+    return list.filter(item=>{
+      const hay = (item.name + ' ' + (item.tags||[]).join(' ') + ' ' + (item.ingredients||[]).join(' ')).toLowerCase();
+      // require that each token appears in hay (loose AND)
+      return parts.every(p => hay.includes(p) || similarity(hay,p) > 0.35);
+    });
+  }
+
+  // simple char overlap similarity
+  function similarity(a,b){
+    let common=0;
+    for(const ch of new Set(b)) if(a.includes(ch)) common++;
+    return common / b.length;
+  }
+
+  // ---------- UI Rendering ----------
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('search');
+  const resultsCount = document.getElementById('results-count');
+  const favCountEl = document.getElementById('fav-count');
+  const clearBtn = document.getElementById('clear');
+
+  let RECIPES = loadRecipes();
+  let FAVS = loadFavs();
+
+  function render(){
+    const q = searchInput.value;
+    const list = fuzzySearch(RECIPES, q);
+    grid.innerHTML = '';
+    resultsCount.textContent = ${list.length} recipe${list.length !== 1 ? 's' : ''} shown;
+    favCountEl.textContent = FAVS.length;
+
+    for(const r of list){
+      const card = document.createElement('div'); card.className='card';
+      const img = document.createElement('img'); img.src = r.image || '';
+      card.appendChild(img);
+      const body = document.createElement('div'); body.className='body';
+      const title = document.createElement('div'); title.innerHTML = '<strong>' + escapeHtml(r.name) + '</strong>';
+      const tags = document.createElement('div'); tags.className='tags'; tags.textContent = (r.tags||[]).join(', ');
+      const instr = document.createElement('div'); instr.style.fontSize='13px'; instr.style.color='var(--muted)'; instr.textContent = r.instructions ? (r.instructions.slice(0,120)+'...') : '';
+      const actions = document.createElement('div'); actions.className='actions';
+      const viewBtn = document.createElement('button'); viewBtn.className='small btn secondary'; viewBtn.textContent='View';
+      viewBtn.onclick = ()=> openRecipeModal(r);
+      const favBtn = document.createElement('button'); favBtn.className='small fav'; favBtn.textContent = FAVS.find(x=>x.id===r.id) ? '♥ Saved' : '♡ Save';
+      favBtn.onclick = ()=> toggleFav(r);
+      actions.appendChild(viewBtn); actions.appendChild(favBtn);
+      // premium lock
+      if(r.premium && !isPremium()){
+        const locked = document.createElement('div'); locked.className='locked'; locked.innerHTML = '🔒 Premium';
+        actions.appendChild(locked);
+      }
+      body.appendChild(title); body.appendChild(tags); body.appendChild(instr); body.appendChild(actions);
+      card.appendChild(body);
+      grid.appendChild(card);
+    }
+  }
+
+  function escapeHtml(s){ return s.replaceAll('<','&lt;').replaceAll('>','&gt;') }
+
+  // ---------- Favorites ----------
+  function toggleFav(r){
+    if(FAVS.find(x=>x.id===r.id)){
+      FAVS = FAVS.filter(x=>x.id!==r.id);
+    } else {
+      FAVS.push({ id:r.id, name:r.name });
+    }
+    saveFavs(FAVS);
+    render();
+  }
+
+  // ---------- Modal & Recipe Details ----------
+  function openRecipeModal(recipe){
+    const tpl = document.getElementById('modal-tpl');
+    const node = tpl.content.cloneNode(true);
+    const modal = node.querySelector('.modal');
+    const body = node.getElementById('modal-body');
+    node.getElementById('modal-title').textContent = recipe.name;
+    node.getElementById('modal-close').onclick = ()=> modal.remove();
+
+    // recipe content
+    const img = document.createElement('img'); img.src = recipe.image; img.style.width='100%'; img.style.borderRadius='8px';
+    const tags = document.createElement('div'); tags.className='tags'; tags.textContent = 'Tags: ' + (recipe.tags||[]).join(', ');
+    const ing = document.createElement('div'); ing.innerHTML = '<strong>Ingredients</strong><ul>' + (recipe.ingredients||[]).map(i=>'<li>'+escapeHtml(i)+'</li>').join('') + '</ul>';
+    const instr = document.createElement('div'); instr.innerHTML = '<strong>Instructions</strong><p>' + escapeHtml(recipe.instructions || '') + '</p>';
+    body.appendChild(img); body.appendChild(tags); body.appendChild(ing); body.appendChild(instr);
+
+    // source embed
+    if(recipe.source && recipe.source.type === 'youtube' && recipe.source.url){
+      const iframe = document.createElement('iframe');
+      iframe.width='100%'; iframe.height='300'; iframe.frameBorder='0'; iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.src = youtubeEmbedUrl(recipe.source.url);
+      body.appendChild(document.createElement('hr')); body.appendChild(iframe);
+    } else if(recipe.source && recipe.source.type === 'tiktok' && recipe.source.url){
+      const link = document.createElement('a'); link.href = recipe.source.url; link.textContent='Open TikTok video'; link.target='_blank';
+      body.appendChild(document.createElement('hr')); body.appendChild(link);
+    }
+
+    // purchase button for premium items if not premium
+    if(recipe.premium && !isPremium()){
+      const note = document.createElement('div'); note.style.marginTop='12px'; note.innerHTML = '<em>Locked premium recipe — buy premium to unlock all premium recipes.</em>';
+      body.appendChild(note);
+    }
+
+    document.body.appendChild(modal);
+  }
+
+  function youtubeEmbedUrl(url){
+    try{
+      const v = url.match(/[?&]v=([^&]+)/);
+      if(v && v[1]) return https://www.youtube.com/embed/${v[1]};
+      const short = url.match(/youtu\\.be\\/(.+)$/);
+      if(short) return https://www.youtube.com/embed/${short[1]};
+      return url;
+    }catch{ return url }
+  }
+
+  // ---------- Admin: add recipe (client-only) ----------
+  document.getElementById('open-admin').addEventListener('click', openAdmin);
+
+  function openAdmin(){
+    const tpl = document.getElementById('modal-tpl');
+    const node = tpl.content.cloneNode(true);
+    const modal = node.querySelector('.modal');
+    const body = node.getElementById('modal-body');
+    node.getElementById('modal-title').textContent = 'Admin — Add Recipe';
+    node.getElementById('modal-close').onclick = ()=> modal.remove();
+
+    body.innerHTML = `
+      <div class="row">
+        <div style="flex:1"><label>Name</label><input id="adm-name" /></div>
+        <div style="flex:1"><label>Tags (comma)</label><input id="adm-tags" /></div>
+      </div>
+      <div style="margin-top:8px"><label>Ingredients (comma)</label><input id="adm-ings" /></div>
+      <div style="margin-top:8px"><label>Instructions</label><textarea id="adm-inst"></textarea></div>
+      <div style="margin-top:8px" class="row">
+        <div style="flex:1"><label>Image URL</label><input id="adm-imgurl" /></div>
+        <div style="flex:1"><label>or Upload image file</label><input id="adm-imgfile" type="file" accept='image/*' /></div>
+      </div>
+      <div style="margin-top:8px" class="row">
+        <div style="flex:1"><label>Source URL (YouTube/TikTok)</label><input id="adm-src" /></div>
+        <div style="flex:0 0 140px;align-self:end"><label>Premium?</label><select id="adm-prem"><option value="false">No</option><option value="true">Yes</option></select></div>
+      </div>
+      <div style="margin-top:10px"><button id="adm-save" class="btn">Save Recipe</button></div>
+      <div style="margin-top:6px;color:var(--muted);font-size:12px">Admin is client-only: saves to localStorage. For real use, integrate with your backend.</div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const fileInput = document.getElementById('adm-imgfile');
+    document.getElementById('adm-save').onclick = async ()=>{
+      const name = document.getElementById('adm-name').value.trim();
+      if(!name){ alert('Enter a name'); return; }
+      let img = document.getElementById('adm-imgurl').value.trim();
+      if(!img && fileInput.files && fileInput.files[0]){
+        // read file as data URL
+        img = await new Promise(res=>{
+          const fr = new FileReader();
+          fr.onload = ()=> res(fr.result);
+          fr.readAsDataURL(fileInput.files[0]);
+        });
+      }
+      const newR = {
+        id: 'r'+Date.now(),
+        name,
+        tags: (document.getElementById('adm-tags').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        ingredients: (document.getElementById('adm-ings').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+        image: img || 'https://via.placeholder.com/800x450?text=No+image',
+        source: { url: (document.getElementById('adm-src').value||''), type: ((document.getElementById('adm-src').value||'').includes('youtube')?'youtube':'link') },
+        instructions: document.getElementById('adm-inst').value,
+        premium: document.getElementById('adm-prem').value === 'true'
+      };
+      RECIPES.unshift(newR);
+      saveRecipes(RECIPES);
+      modal.remove();
+      render();
+      alert('Recipe saved (local only). To persist across devices, connect a backend.');
+    };
+  }
+
+  // ---------- PayPal Buttons (Smart Buttons) ----------
+  // Client-side capture: NOTE this uses the client-side smart button which completes a capture in the browser.
+  // For production, verify captures on the server and use webhooks.
+  function setupPayPal(){
+    if(!window.paypal) return;
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+      createOrder: function(data, actions){
+        // create order with PayPal (client)
+        return actions.order.create({
+          purchase_units: [{ amount: { value: '3.99' }, description: 'Recipe Explorer Premium' }],
+          application_context: { brand_name: 'Recipe Explorer' }
+        });
+      },
+      onApprove: function(data, actions){
+        return actions.order.capture().then(function(details){
+          // Payment successful — mark local user as premium
+          setPremium();
+          alert('Payment complete — premium unlocked!');
+          render();
+        });
+      },
+      onError: function(err){
+        console.error('PayPal error', err);
+        alert('Payment failed: ' + err);
+      }
+    }).render('#paypal-button-container');
+  }
+
+  // ---------- Record Purchase (local-only) ----------
+  function recordPurchaseLocal(orderId, amount){
+    const uid = 'local-' + (localStorage.getItem('client_id') || Date.now());
+    const purchases = JSON.parse(localStorage.getItem('purchases_v1') || '[]');
+    purchases.push({ orderId, amount, ts: Date.now() });
+    localStorage.setItem('purchases_v1', JSON.stringify(purchases));
+  }
+
+  // ---------- Utilities & Events ----------
+  searchInput.addEventListener('input', ()=> render());
+  clearBtn.addEventListener('click', ()=> { searchInput.value=''; render(); });
+
+  // initial render
+  render();
+  setupPayPal();
+
+  // expose some helpers for debugging in dev console
+  window._app = { RECIPES, saveRecipes, loadRecipes, setPremium, isPremium, recordPurchaseLocal };

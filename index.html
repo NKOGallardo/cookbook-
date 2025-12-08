@@ -1,343 +1,651 @@
-<!Doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Recipe Explorer — HTML/CSS/JS</title>
-  <!-- PayPal SDK (sandbox client-id 'sb' for testing). Replace sb with your client-id when ready -->
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
-  <link rel="stylesheet" href="styel.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder - Discover Delicious Recipes</title>
+    <link rel="icon" href="Logo(Black and white).png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 18px 25px;
+            font-size: 1.1em;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 18px 40px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .category-btn {
+            padding: 12px 20px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .results {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            min-height: 200px;
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .recipe-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .recipe-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .recipe-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .recipe-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .recipe-link:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .popular-sites {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .popular-sites h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .site-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .site-card:hover {
+            transform: scale(1.05);
+        }
+
+        .site-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .site-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+            transform: none;
+        }
+
+        .modal h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .step-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .help-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s;
+            z-index: 999;
+        }
+
+        .help-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1em;
+            }
+
+            .search-section {
+                padding: 25px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .popular-sites {
+                padding: 25px;
+            }
+
+            .results {
+                padding: 25px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+
+            .modal h2 {
+                font-size: 1.5em;
+                padding-right: 40px;
+            }
+
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .help-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 30px 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .search-section, .popular-sites, .results {
+                padding: 20px;
+            }
+
+            input[type="text"] {
+                font-size: 1em;
+                padding: 15px 20px;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+            .category-btn {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Recipe Explorer</h1>
-        <p class="lead">Search recipes by ingredient, tag, or vague ideas — TikTok & YouTube friendly.</p>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <div id="paypal-button-container"></div>
-        <button id="open-admin" class="btn secondary">Admin</button>
-      </div>
-    </header>
+    <!-- How It Works Modal -->
+    <div class="modal" id="howItWorksModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2>🍳 How It Works</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Search for Recipes</h3>
+                    <p>Type what you want to cook in the search box. Be specific (like "easy pasta carbonara") or general (like "chicken").</p>
+                </div>
+            </div>
 
-    <div class="search-bar">
-      <input id="search" type="search" placeholder="Search dishes, ingredients, or ideas (e.g., 'quick vegan lunch')" />
-      <button id="clear" class="small">Clear</button>
-    </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Use Quick Categories</h3>
+                    <p>Not sure what to cook? Click one of our popular category buttons for instant recipe ideas!</p>
+                </div>
+            </div>
 
-    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-      <div id="results-count" style="color:var(--muted);font-size:13px">Loading...</div>
-      <div style="margin-left:auto;color:var(--muted);font-size:13px">Favorites: <span id="fav-count">0</span></div>
-    </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Find Recipes Online</h3>
+                    <p>Click the search button to find recipes from across the web, or browse our handpicked recipe websites below.</p>
+                </div>
+            </div>
 
-    <div class="grid" id="grid"></div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Start Cooking!</h3>
+                    <p>Choose a recipe that looks delicious, follow the instructions, and enjoy your homemade meal!</p>
+                </div>
+            </div>
 
-    <footer>
-      Built with HTML/CSS/JS — replace PayPal sandbox client-id with your live id to accept real payments.
-    </footer>
-  </div>
-
-  <!-- Modal template -->
-  <template id="modal-tpl">
-    <div class="modal" id="modal-root">
-      <div class="panel" role="dialog" aria-modal="true">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h3 id="modal-title">Title</h3>
-          <button id="modal-close" class="btn secondary">Close</button>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="closeModal()" style="padding: 15px 40px;">Got it!</button>
+            </div>
         </div>
-        <div id="modal-body" style="margin-top:12px"></div>
-      </div>
     </div>
-  </template>
 
-  <script>
-  // ---------- Data & Storage ----------
-  const STORAGE_KEY = 'recipes_v1';
-  const FAVORITES_KEY = 'favorites_v1';
-  const PREMIUM_KEY = 'premium_v1';
+    <!-- Floating Help Button -->
+    <button class="help-btn" onclick="openModal()" title="How it works">?</button>
+    <div class="container">
+        <header>
+            <h1>🍳 Recipe Finder</h1>
+            <p class="tagline">Find delicious recipes from around the web</p>
+        </header>
 
-  // Seed data (images are free unsplash / placeholder)
-  const seedRecipes = [
-    {
-      id: 'r1',
-      name: 'Spaghetti Bolognese',
-      ingredients: ['spaghetti','tomato','beef','onion','garlic'],
-      tags: ['pasta','italian','dinner'],
-      image: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=800&q=60',
-      source: { type: 'youtube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
-      instructions: 'Cook pasta. Prepare sauce. Mix and serve.',
-      premium: false
-    },
-    {
-      id: 'r2',
-      name: 'TikTok Tortilla Pizza',
-      ingredients: ['tortilla','cheese','tomato','oregano'],
-      tags: ['tiktok','quick','snack'],
-      image: 'https://via.placeholder.com/800x450?text=TikTok+Tortilla+Pizza',
-      source: { type: 'tiktok', url: 'https://www.tiktok.com' },
-      instructions: 'Assemble tortilla, cheese, bake briefly.',
-      premium: false
-    },
-    {
-      id: 'r3',
-      name: 'Creamy Chicken Curry (Premium)',
-      ingredients: ['chicken','curry','coconut milk'],
-      tags: ['curry','spicy','dinner'],
-      image: 'https://images.unsplash.com/photo-1604908176995-0f3c33c1af0f?auto=format&fit=crop&w=800&q=60',
-      source: { type: 'youtube', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
-      instructions: 'Brown chicken, add spices and coconut milk. Simmer and serve.',
-      premium: true
-    }
-  ];
+        <div class="search-section">
+            <h2 style="color: #333; margin-bottom: 20px;">What do you want to cook?</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search for recipes... (e.g., pasta, chicken, vegan)" />
+                <button onclick="searchRecipes()">Search</button>
+            </div>
+            
+            <div>
+                <strong style="color: #666;">Popular Categories:</strong>
+                <div class="categories">
+                    <button class="category-btn" onclick="quickSearch('pasta')">🍝 Pasta</button>
+                    <button class="category-btn" onclick="quickSearch('chicken')">🍗 Chicken</button>
+                    <button class="category-btn" onclick="quickSearch('vegetarian')">🥗 Vegetarian</button>
+                    <button class="category-btn" onclick="quickSearch('dessert')">🍰 Desserts</button>
+                    <button class="category-btn" onclick="quickSearch('quick meals')">⚡ Quick Meals</button>
+                    <button class="category-btn" onclick="quickSearch('healthy')">💚 Healthy</button>
+                </div>
+            </div>
+        </div>
 
-  function loadRecipes(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) return JSON.parse(raw);
-    }catch(e){console.warn(e)}
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(seedRecipes));
-    return seedRecipes.slice();
-  }
-  function saveRecipes(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+        <div class="results" id="results">
+            <h2 style="color: #333; margin-bottom: 20px;">Search Results</h2>
+            <div id="resultsContent"></div>
+        </div>
 
-  // favorites and premium
-  function loadFavs(){ try{ return JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]') }catch{ return [] } }
-  function saveFavs(f){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(f)); }
-  function isPremium(){ return !!localStorage.getItem(PREMIUM_KEY); }
-  function setPremium(){ localStorage.setItem(PREMIUM_KEY, Date.now()) }
+        <div class="popular-sites">
+            <h2>Popular Recipe Websites</h2>
+            <div class="sites-grid">
+                <a href="https://www.allrecipes.com" target="_blank" class="site-card">
+                    <div class="site-name">AllRecipes</div>
+                    <div class="site-desc">Thousands of community recipes</div>
+                </a>
+                <a href="https://www.foodnetwork.com" target="_blank" class="site-card">
+                    <div class="site-name">Food Network</div>
+                    <div class="site-desc">Chef-tested recipes</div>
+                </a>
+                <a href="https://www.bonappetit.com" target="_blank" class="site-card">
+                    <div class="site-name">Bon Appétit</div>
+                    <div class="site-desc">Modern cooking inspiration</div>
+                </a>
+                <a href="https://www.tasty.co" target="_blank" class="site-card">
+                    <div class="site-name">Tasty</div>
+                    <div class="site-desc">Video recipes made easy</div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-  // ---------- Search (simple fuzzy-ish) ----------
-  function fuzzySearch(list, q){
-    if(!q) return list;
-    q = q.toLowerCase().trim();
-    const parts = q.split(/\s+/);
-    return list.filter(item=>{
-      const hay = (item.name + ' ' + (item.tags||[]).join(' ') + ' ' + (item.ingredients||[]).join(' ')).toLowerCase();
-      // require that each token appears in hay (loose AND)
-      return parts.every(p => hay.includes(p) || similarity(hay,p) > 0.35);
-    });
-  }
-
-  // simple char overlap similarity
-  function similarity(a,b){
-    let common=0;
-    for(const ch of new Set(b)) if(a.includes(ch)) common++;
-    return common / b.length;
-  }
-
-  // ---------- UI Rendering ----------
-  const grid = document.getElementById('grid');
-  const searchInput = document.getElementById('search');
-  const resultsCount = document.getElementById('results-count');
-  const favCountEl = document.getElementById('fav-count');
-  const clearBtn = document.getElementById('clear');
-
-  let RECIPES = loadRecipes();
-  let FAVS = loadFavs();
-
-  function render(){
-    const q = searchInput.value;
-    const list = fuzzySearch(RECIPES, q);
-    grid.innerHTML = '';
-    resultsCount.textContent = ${list.length} recipe${list.length !== 1 ? 's' : ''} shown;
-    favCountEl.textContent = FAVS.length;
-
-    for(const r of list){
-      const card = document.createElement('div'); card.className='card';
-      const img = document.createElement('img'); img.src = r.image || '';
-      card.appendChild(img);
-      const body = document.createElement('div'); body.className='body';
-      const title = document.createElement('div'); title.innerHTML = '<strong>' + escapeHtml(r.name) + '</strong>';
-      const tags = document.createElement('div'); tags.className='tags'; tags.textContent = (r.tags||[]).join(', ');
-      const instr = document.createElement('div'); instr.style.fontSize='13px'; instr.style.color='var(--muted)'; instr.textContent = r.instructions ? (r.instructions.slice(0,120)+'...') : '';
-      const actions = document.createElement('div'); actions.className='actions';
-      const viewBtn = document.createElement('button'); viewBtn.className='small btn secondary'; viewBtn.textContent='View';
-      viewBtn.onclick = ()=> openRecipeModal(r);
-      const favBtn = document.createElement('button'); favBtn.className='small fav'; favBtn.textContent = FAVS.find(x=>x.id===r.id) ? '♥ Saved' : '♡ Save';
-      favBtn.onclick = ()=> toggleFav(r);
-      actions.appendChild(viewBtn); actions.appendChild(favBtn);
-      // premium lock
-      if(r.premium && !isPremium()){
-        const locked = document.createElement('div'); locked.className='locked'; locked.innerHTML = '🔒 Premium';
-        actions.appendChild(locked);
-      }
-      body.appendChild(title); body.appendChild(tags); body.appendChild(instr); body.appendChild(actions);
-      card.appendChild(body);
-      grid.appendChild(card);
-    }
-  }
-
-  function escapeHtml(s){ return s.replaceAll('<','&lt;').replaceAll('>','&gt;') }
-
-  // ---------- Favorites ----------
-  function toggleFav(r){
-    if(FAVS.find(x=>x.id===r.id)){
-      FAVS = FAVS.filter(x=>x.id!==r.id);
-    } else {
-      FAVS.push({ id:r.id, name:r.name });
-    }
-    saveFavs(FAVS);
-    render();
-  }
-
-  // ---------- Modal & Recipe Details ----------
-  function openRecipeModal(recipe){
-    const tpl = document.getElementById('modal-tpl');
-    const node = tpl.content.cloneNode(true);
-    const modal = node.querySelector('.modal');
-    const body = node.getElementById('modal-body');
-    node.getElementById('modal-title').textContent = recipe.name;
-    node.getElementById('modal-close').onclick = ()=> modal.remove();
-
-    // recipe content
-    const img = document.createElement('img'); img.src = recipe.image; img.style.width='100%'; img.style.borderRadius='8px';
-    const tags = document.createElement('div'); tags.className='tags'; tags.textContent = 'Tags: ' + (recipe.tags||[]).join(', ');
-    const ing = document.createElement('div'); ing.innerHTML = '<strong>Ingredients</strong><ul>' + (recipe.ingredients||[]).map(i=>'<li>'+escapeHtml(i)+'</li>').join('') + '</ul>';
-    const instr = document.createElement('div'); instr.innerHTML = '<strong>Instructions</strong><p>' + escapeHtml(recipe.instructions || '') + '</p>';
-    body.appendChild(img); body.appendChild(tags); body.appendChild(ing); body.appendChild(instr);
-
-    // source embed
-    if(recipe.source && recipe.source.type === 'youtube' && recipe.source.url){
-      const iframe = document.createElement('iframe');
-      iframe.width='100%'; iframe.height='300'; iframe.frameBorder='0'; iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      iframe.src = youtubeEmbedUrl(recipe.source.url);
-      body.appendChild(document.createElement('hr')); body.appendChild(iframe);
-    } else if(recipe.source && recipe.source.type === 'tiktok' && recipe.source.url){
-      const link = document.createElement('a'); link.href = recipe.source.url; link.textContent='Open TikTok video'; link.target='_blank';
-      body.appendChild(document.createElement('hr')); body.appendChild(link);
-    }
-
-    // purchase button for premium items if not premium
-    if(recipe.premium && !isPremium()){
-      const note = document.createElement('div'); note.style.marginTop='12px'; note.innerHTML = '<em>Locked premium recipe — buy premium to unlock all premium recipes.</em>';
-      body.appendChild(note);
-    }
-
-    document.body.appendChild(modal);
-  }
-
-  function youtubeEmbedUrl(url){
-    try{
-      const v = url.match(/[?&]v=([^&]+)/);
-      if(v && v[1]) return https://www.youtube.com/embed/${v[1]};
-      const short = url.match(/youtu\\.be\\/(.+)$/);
-      if(short) return https://www.youtube.com/embed/${short[1]};
-      return url;
-    }catch{ return url }
-  }
-
-  // ---------- Admin: add recipe (client-only) ----------
-  document.getElementById('open-admin').addEventListener('click', openAdmin);
-
-  function openAdmin(){
-    const tpl = document.getElementById('modal-tpl');
-    const node = tpl.content.cloneNode(true);
-    const modal = node.querySelector('.modal');
-    const body = node.getElementById('modal-body');
-    node.getElementById('modal-title').textContent = 'Admin — Add Recipe';
-    node.getElementById('modal-close').onclick = ()=> modal.remove();
-
-    body.innerHTML = `
-      <div class="row">
-        <div style="flex:1"><label>Name</label><input id="adm-name" /></div>
-        <div style="flex:1"><label>Tags (comma)</label><input id="adm-tags" /></div>
-      </div>
-      <div style="margin-top:8px"><label>Ingredients (comma)</label><input id="adm-ings" /></div>
-      <div style="margin-top:8px"><label>Instructions</label><textarea id="adm-inst"></textarea></div>
-      <div style="margin-top:8px" class="row">
-        <div style="flex:1"><label>Image URL</label><input id="adm-imgurl" /></div>
-        <div style="flex:1"><label>or Upload image file</label><input id="adm-imgfile" type="file" accept='image/*' /></div>
-      </div>
-      <div style="margin-top:8px" class="row">
-        <div style="flex:1"><label>Source URL (YouTube/TikTok)</label><input id="adm-src" /></div>
-        <div style="flex:0 0 140px;align-self:end"><label>Premium?</label><select id="adm-prem"><option value="false">No</option><option value="true">Yes</option></select></div>
-      </div>
-      <div style="margin-top:10px"><button id="adm-save" class="btn">Save Recipe</button></div>
-      <div style="margin-top:6px;color:var(--muted);font-size:12px">Admin is client-only: saves to localStorage. For real use, integrate with your backend.</div>
-    `;
-
-    document.body.appendChild(modal);
-
-    const fileInput = document.getElementById('adm-imgfile');
-    document.getElementById('adm-save').onclick = async ()=>{
-      const name = document.getElementById('adm-name').value.trim();
-      if(!name){ alert('Enter a name'); return; }
-      let img = document.getElementById('adm-imgurl').value.trim();
-      if(!img && fileInput.files && fileInput.files[0]){
-        // read file as data URL
-        img = await new Promise(res=>{
-          const fr = new FileReader();
-          fr.onload = ()=> res(fr.result);
-          fr.readAsDataURL(fileInput.files[0]);
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const modal = document.getElementById('howItWorksModal');
+        
+        // Show modal on first visit
+        window.addEventListener('load', () => {
+            if (!localStorage.getItem('visitedBefore')) {
+                openModal();
+                localStorage.setItem('visitedBefore', 'true');
+            }
         });
-      }
-      const newR = {
-        id: 'r'+Date.now(),
-        name,
-        tags: (document.getElementById('adm-tags').value||'').split(',').map(s=>s.trim()).filter(Boolean),
-        ingredients: (document.getElementById('adm-ings').value||'').split(',').map(s=>s.trim()).filter(Boolean),
-        image: img || 'https://via.placeholder.com/800x450?text=No+image',
-        source: { url: (document.getElementById('adm-src').value||''), type: ((document.getElementById('adm-src').value||'').includes('youtube')?'youtube':'link') },
-        instructions: document.getElementById('adm-inst').value,
-        premium: document.getElementById('adm-prem').value === 'true'
-      };
-      RECIPES.unshift(newR);
-      saveRecipes(RECIPES);
-      modal.remove();
-      render();
-      alert('Recipe saved (local only). To persist across devices, connect a backend.');
-    };
-  }
 
-  // ---------- PayPal Buttons (Smart Buttons) ----------
-  // Client-side capture: NOTE this uses the client-side smart button which completes a capture in the browser.
-  // For production, verify captures on the server and use webhooks.
-  function setupPayPal(){
-    if(!window.paypal) return;
-    paypal.Buttons({
-      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-      createOrder: function(data, actions){
-        // create order with PayPal (client)
-        return actions.order.create({
-          purchase_units: [{ amount: { value: '3.99' }, description: 'Recipe Explorer Premium' }],
-          application_context: { brand_name: 'Recipe Explorer' }
+        function openModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
         });
-      },
-      onApprove: function(data, actions){
-        return actions.order.capture().then(function(details){
-          // Payment successful — mark local user as premium
-          setPremium();
-          alert('Payment complete — premium unlocked!');
-          render();
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
         });
-      },
-      onError: function(err){
-        console.error('PayPal error', err);
-        alert('Payment failed: ' + err);
-      }
-    }).render('#paypal-button-container');
-  }
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchRecipes();
+            }
+        });
 
-  // ---------- Record Purchase (local-only) ----------
-  function recordPurchaseLocal(orderId, amount){
-    const uid = 'local-' + (localStorage.getItem('client_id') || Date.now());
-    const purchases = JSON.parse(localStorage.getItem('purchases_v1') || '[]');
-    purchases.push({ orderId, amount, ts: Date.now() });
-    localStorage.setItem('purchases_v1', JSON.stringify(purchases));
-  }
+        function quickSearch(query) {
+            searchInput.value = query;
+            searchRecipes();
+        }
 
-  // ---------- Utilities & Events ----------
-  searchInput.addEventListener('input', ()=> render());
-  clearBtn.addEventListener('click', ()=> { searchInput.value=''; render(); });
+        function searchRecipes() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('Please enter a search term');
+                return;
+            }
 
-  // initial render
-  render();
-  setupPayPal();
+            const resultsDiv = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsDiv.classList.add('active');
+            resultsContent.innerHTML = '<div class="loading">🔍 Searching for recipes...</div>';
 
-  // expose some helpers for debugging in dev console
-  window._app = { RECIPES, saveRecipes, loadRecipes, setPremium, isPremium, recordPurchaseLocal };
-
-  </script>
+            // Simulate search and redirect to Google search for recipes
+            setTimeout(() => {
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + ' recipe')}`;
+                
+                resultsContent.innerHTML = `
+                    <div style="text-align: center; padding: 30px;">
+                        <h3 style="color: #333; margin-bottom: 20px;">Ready to find "${query}" recipes!</h3>
+                        <p style="color: #666; margin-bottom: 25px; font-size: 1.1em;">Click below to search for recipes on the web:</p>
+                        <a href="${searchUrl}" target="_blank" style="display: inline-block; padding: 18px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1em;">
+                            Search for ${query} recipes →
+                        </a>
+                        <p style="color: #999; margin-top: 20px; font-size: 0.9em;">Or try the popular recipe sites below!</p>
+                    </div>
+                `;
+            }, 800);
+        }
+    </script>
 </body>
 </html>
