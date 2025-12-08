@@ -1,4 +1,4 @@
-   * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -6,7 +6,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             min-height: 100vh;
             padding: 20px;
         }
@@ -59,14 +59,14 @@
         }
 
         input[type="text"]:focus {
-            border-color: #667eea;
+            border-color: #4b4b4b;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         button {
             padding: 18px 40px;
             font-size: 1.1em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             color: white;
             border: none;
             border-radius: 50px;
@@ -77,11 +77,33 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(67, 67, 67, 0.4);
         }
 
         button:active {
             transform: translateY(0);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            border-color: #373737;
         }
 
         .categories {
@@ -95,7 +117,7 @@
             padding: 12px 20px;
             background: #f5f5f5;
             border: 2px solid #e0e0e0;
-            color: #333;
+            color: black;
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
@@ -104,9 +126,9 @@
         }
 
         .category-btn:hover {
-            background: #667eea;
+            background: #424242;
             color: white;
-            border-color: #667eea;
+            border-color: #525252;
             transform: translateY(-2px);
         }
 
@@ -123,61 +145,7 @@
             display: block;
         }
 
-        .recipe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-
-        .recipe-card {
-            background: #f9f9f9;
-            border-radius: 15px;
-            padding: 25px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            border-color: #667eea;
-        }
-
-        .recipe-title {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .recipe-meta {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-        }
-
-        .recipe-link {
-            display: inline-block;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .recipe-link:hover {
-            text-decoration: underline;
-        }
-
         .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .no-results {
             text-align: center;
             padding: 40px;
             color: #666;
@@ -206,7 +174,7 @@
 
         .site-card {
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #333;
             color: white;
             border-radius: 15px;
             text-align: center;
@@ -227,4 +195,352 @@
         .site-desc {
             font-size: 0.9em;
             opacity: 0.9;
+        }
+
+        .favorites-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .favorites-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .favorite-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .favorite-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .favorite-name {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .recipe-of-day {
+            background: #1f1f1f;
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(9, 9, 9, 0.2);
+            text-align: center;
+        }
+
+        .recipe-of-day h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .recipe-of-day p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .tips-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .tips-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .tip-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4d4d4d;
+        }
+
+        .tip-card h3 {
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .tip-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+            transform: none;
+        }
+
+        .modal h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            border-left: 4px solid #303030;
+        }
+
+        .step-number {
+            background: #333;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .step-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .help-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #333;
+            color: white;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(110, 110, 110, 0.4);
+            transition: transform 0.3s;
+            z-index: 999;
+        }
+
+        .help-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .save-favorite-btn {
+            background: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .empty-favorites {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1em;
+            }
+
+            .search-section, .popular-sites, .results, .favorites-section, .tips-section, .recipe-of-day {
+                padding: 25px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+
+            .modal h2 {
+                font-size: 1.5em;
+                padding-right: 40px;
+            }
+
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .help-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            .favorite-item {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 30px 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .search-section, .popular-sites, .results, .favorites-section, .tips-section, .recipe-of-day {
+                padding: 20px;
+            }
+
+            input[type="text"] {
+                font-size: 1em;
+                padding: 15px 20px;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+            .category-btn {
+                padding: 15px;
+            }
         }

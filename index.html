@@ -4,470 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Finder - Discover Delicious Recipes</title>
-    <link rel="icon" href="Logo(Black and white).png" type="image/png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            padding: 40px 20px;
-        }
-
-        h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .tagline {
-            font-size: 1.3em;
-            opacity: 0.95;
-        }
-
-        .search-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 40px;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 18px 25px;
-            font-size: 1.1em;
-            border: 2px solid #e0e0e0;
-            border-radius: 50px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
-            padding: 18px 40px;
-            font-size: 1.1em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .category-btn {
-            padding: 12px 20px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95em;
-            font-weight: 500;
-        }
-
-        .category-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-
-        .results {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            min-height: 200px;
-            display: none;
-        }
-
-        .results.active {
-            display: block;
-        }
-
-        .recipe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-
-        .recipe-card {
-            background: #f9f9f9;
-            border-radius: 15px;
-            padding: 25px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            border-color: #667eea;
-        }
-
-        .recipe-title {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .recipe-meta {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-        }
-
-        .recipe-link {
-            display: inline-block;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .recipe-link:hover {
-            text-decoration: underline;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .popular-sites {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-top: 30px;
-        }
-
-        .popular-sites h2 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.8em;
-        }
-
-        .sites-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .site-card {
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            text-align: center;
-            text-decoration: none;
-            transition: transform 0.3s;
-        }
-
-        .site-card:hover {
-            transform: scale(1.05);
-        }
-
-        .site-name {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .site-desc {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: slideIn 0.3s;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2em;
-            color: #999;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
-            transition: color 0.3s;
-        }
-
-        .close-btn:hover {
-            color: #333;
-            transform: none;
-        }
-
-        .modal h2 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 2em;
-        }
-
-        .step {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .step-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-right: 20px;
-            flex-shrink: 0;
-        }
-
-        .step-content h3 {
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 1.2em;
-        }
-
-        .step-content p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .help-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            transition: transform 0.3s;
-            z-index: 999;
-        }
-
-        .help-btn:hover {
-            transform: scale(1.1);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .tagline {
-                font-size: 1em;
-            }
-
-            .search-section {
-                padding: 25px;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-                padding: 15px;
-            }
-
-            .categories {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .recipe-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .sites-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .popular-sites {
-                padding: 25px;
-            }
-
-            .results {
-                padding: 25px;
-            }
-
-            .modal-content {
-                padding: 30px 20px;
-                width: 95%;
-            }
-
-            .modal h2 {
-                font-size: 1.5em;
-                padding-right: 40px;
-            }
-
-            .step {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .step-number {
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-
-            .help-btn {
-                bottom: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-                font-size: 1.2em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header {
-                padding: 30px 10px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .search-section, .popular-sites, .results {
-                padding: 20px;
-            }
-
-            input[type="text"] {
-                font-size: 1em;
-                padding: 15px 20px;
-            }
-
-            .categories {
-                grid-template-columns: 1fr;
-            }
-
-            .category-btn {
-                padding: 15px;
-            }
-        }
-    </style>
+    <link rel="icon" href="Logo(Black and white).png" type="image/x-icon">
+    <link rel="stylesheet" href="styel.css">
 </head>
 <body>
     <!-- How It Works Modal -->
@@ -487,46 +25,82 @@
             <div class="step">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <h3>Use Quick Categories</h3>
-                    <p>Not sure what to cook? Click one of our popular category buttons for instant recipe ideas!</p>
+                    <h3>Use Filters</h3>
+                    <p>Filter recipes by diet type, meal type, and cooking time to find exactly what you need!</p>
                 </div>
             </div>
 
             <div class="step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>Find Recipes Online</h3>
-                    <p>Click the search button to find recipes from across the web, or browse our handpicked recipe websites below.</p>
+                    <h3>Save Your Favorites</h3>
+                    <p>Click the "Save to Favorites" button to keep track of recipes you want to try later!</p>
                 </div>
             </div>
 
             <div class="step">
                 <div class="step-number">4</div>
                 <div class="step-content">
-                    <h3>Start Cooking!</h3>
+                    <h3>Find & Cook!</h3>
                     <p>Choose a recipe that looks delicious, follow the instructions, and enjoy your homemade meal!</p>
                 </div>
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-                <button onclick="closeModal()" style="padding: 15px 40px;">Got it!</button>
+                <button onclick="closeModal()">Got it!</button>
             </div>
         </div>
     </div>
 
     <!-- Floating Help Button -->
     <button class="help-btn" onclick="openModal()" title="How it works">?</button>
+
     <div class="container">
         <header>
             <h1>🍳 Recipe Finder</h1>
             <p class="tagline">Find delicious recipes from around the web</p>
         </header>
 
+        <!-- Recipe of the Day -->
+        <div class="recipe-of-day">
+            <h2>🌟 Recipe of the Day</h2>
+            <p id="dailyRecipe">Loading inspiration...</p>
+            <button onclick="searchDailyRecipe()" style="background: white; color: #f5576c;">Try This Recipe!</button>
+        </div>
+
         <div class="search-section">
             <h2 style="color: #333; margin-bottom: 20px;">What do you want to cook?</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search for recipes... (e.g., pasta, chicken, vegan)" />
                 <button onclick="searchRecipes()">Search</button>
+                <button class="save-favorite-btn" onclick="saveFavorite()">💖 Save</button>
+            </div>
+
+            <div class="filters">
+                <select id="dietFilter">
+                    <option value="">All Diets</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="gluten-free">Gluten-Free</option>
+                    <option value="keto">Keto</option>
+                    <option value="paleo">Paleo</option>
+                </select>
+
+                <select id="mealFilter">
+                    <option value="">All Meals</option>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                    <option value="dessert">Dessert</option>
+                </select>
+
+                <select id="timeFilter">
+                    <option value="">Any Time</option>
+                    <option value="under 15 minutes">Under 15 min</option>
+                    <option value="under 30 minutes">Under 30 min</option>
+                    <option value="under 1 hour">Under 1 hour</option>
+                </select>
             </div>
             
             <div>
@@ -538,6 +112,8 @@
                     <button class="category-btn" onclick="quickSearch('dessert')">🍰 Desserts</button>
                     <button class="category-btn" onclick="quickSearch('quick meals')">⚡ Quick Meals</button>
                     <button class="category-btn" onclick="quickSearch('healthy')">💚 Healthy</button>
+                    <button class="category-btn" onclick="quickSearch('soup')">🍲 Soups</button>
+                    <button class="category-btn" onclick="quickSearch('salad')">🥙 Salads</button>
                 </div>
             </div>
         </div>
@@ -545,6 +121,35 @@
         <div class="results" id="results">
             <h2 style="color: #333; margin-bottom: 20px;">Search Results</h2>
             <div id="resultsContent"></div>
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="favorites-section">
+            <h2>💖 My Favorite Searches</h2>
+            <div id="favoritesList">
+                <div class="empty-favorites">No favorites yet. Save your searches above!</div>
+            </div>
+        </div>
+
+        <!-- Cooking Tips -->
+        <div class="tips-section">
+            <h2>👨‍🍳 Cooking Tips</h2>
+            <div class="tip-card">
+                <h3>🔥 Read the Recipe First</h3>
+                <p>Always read through the entire recipe before starting. This helps you understand the process and prepare all ingredients.</p>
+            </div>
+            <div class="tip-card">
+                <h3>🧂 Taste as You Go</h3>
+                <p>Season and taste your food throughout the cooking process. It's easier to add flavor gradually than to fix an over-seasoned dish.</p>
+            </div>
+            <div class="tip-card">
+                <h3>🔪 Prep Everything First</h3>
+                <p>Chop vegetables, measure ingredients, and have everything ready before you start cooking. This makes the process smoother!</p>
+            </div>
+            <div class="tip-card">
+                <h3>⏰ Use a Timer</h3>
+                <p>Don't rely on memory alone. Set timers to avoid overcooking or burning your food.</p>
+            </div>
         </div>
 
         <div class="popular-sites">
@@ -566,86 +171,19 @@
                     <div class="site-name">Tasty</div>
                     <div class="site-desc">Video recipes made easy</div>
                 </a>
+                <a href="https://www.seriouseats.com" target="_blank" class="site-card">
+                    <div class="site-name">Serious Eats</div>
+                    <div class="site-desc">Science-based cooking</div>
+                </a>
+                <a href="https://www.epicurious.com" target="_blank" class="site-card">
+                    <div class="site-name">Epicurious</div>
+                    <div class="site-desc">Curated recipe collection</div>
+                </a>
             </div>
         </div>
     </div>
 
-    <script>
-        const searchInput = document.getElementById('searchInput');
-        const modal = document.getElementById('howItWorksModal');
-        
-        // Show modal on first visit
-        window.addEventListener('load', () => {
-            if (!localStorage.getItem('visitedBefore')) {
-                openModal();
-                localStorage.setItem('visitedBefore', 'true');
-            }
-        });
-
-        function openModal() {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
-                closeModal();
-            }
-        });
-        
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchRecipes();
-            }
-        });
-
-        function quickSearch(query) {
-            searchInput.value = query;
-            searchRecipes();
-        }
-
-        function searchRecipes() {
-            const query = searchInput.value.trim();
-            if (!query) {
-                alert('Please enter a search term');
-                return;
-            }
-
-            const resultsDiv = document.getElementById('results');
-            const resultsContent = document.getElementById('resultsContent');
-            
-            resultsDiv.classList.add('active');
-            resultsContent.innerHTML = '<div class="loading">🔍 Searching for recipes...</div>';
-
-            // Simulate search and redirect to Google search for recipes
-            setTimeout(() => {
-                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + ' recipe')}`;
-                
-                resultsContent.innerHTML = `
-                    <div style="text-align: center; padding: 30px;">
-                        <h3 style="color: #333; margin-bottom: 20px;">Ready to find "${query}" recipes!</h3>
-                        <p style="color: #666; margin-bottom: 25px; font-size: 1.1em;">Click below to search for recipes on the web:</p>
-                        <a href="${searchUrl}" target="_blank" style="display: inline-block; padding: 18px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1em;">
-                            Search for ${query} recipes →
-                        </a>
-                        <p style="color: #999; margin-top: 20px; font-size: 0.9em;">Or try the popular recipe sites below!</p>
-                    </div>
-                `;
-            }, 800);
-        }
+    <script src="js.js">
     </script>
 </body>
 </html>
