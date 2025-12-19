@@ -43,7 +43,7 @@ Quick links to trusted recipe websites:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Any modern web browser (Chrome, Firefox, Safari, Edge).  
+- Any modern web browser (Chrome, Firefox, Safari, Edge, etc).  
 - No build tools or server required — this app runs as a static page.
 
 ### Installation
