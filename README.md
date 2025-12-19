@@ -5,7 +5,6 @@ A modern, user-friendly web application that helps people discover delicious rec
 ---
 
 ![Demo Screenshot](https://communist-orange-as4zy5xmvt-ino69m112h.edgeone.dev/Screenshot%20(30).png)
-*(Replace with actual screenshots or image carousel.)*
 
 ## ✨ Features
 
