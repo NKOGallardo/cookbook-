@@ -46,9 +46,9 @@ Quick links to trusted recipe websites:
 - Any modern web browser (Chrome, Firefox, Safari, Edge, etc).  
 - No build tools or server required — this app runs as a static page.
 
-### by NKO_Gallardo (How to run)
-- For VS-code user, use go live
-- If you don't use any code editer, "open with" Chrome 
+### (How to run) by NKO_Gallardo 
+- For VScode users, use go live
+- If you don't use an IDE, "open with" Chrome 
 
 ### Installation
 
