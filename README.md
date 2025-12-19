@@ -17,7 +17,7 @@ A modern, user-friendly web application that helps people discover delicious rec
 ### 💖 Favorites System
 - Save and manage favorite recipe searches.
 - Favorites persist between sessions using `localStorage`.
-- Add / remove favorites with a single click.
+- Add/remove favorites with a single click.
 
 ### 🌟 Recipe of the Day
 - Daily rotating recipe suggestions for inspiration.
